@@ -5,13 +5,9 @@ using System.Threading.Tasks;
 
 namespace Linkdeed.Models
 {
-    public class User
+    public class User : UserBase
     {
-        public string Username { get; set; }
-        public string PasswordHash { get; set; }
-        public string AddressMail { get; set; }
         public string AccesLevel { get; set; }
         public int AverageJobRate { get; set; }
-        
     }
 }
