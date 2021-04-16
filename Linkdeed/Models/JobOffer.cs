@@ -8,7 +8,7 @@ namespace Linkdeed.Models
     public class JobOffer
     {
         public int Id { get; set; }
-        public Job Job { get; set; }
+        public int JobId { get; set; }
         public string OfferStatus { get; set; }
     }
 }
