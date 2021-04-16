@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Linkdeed.Models
+namespace Linkdeed.DTO
 {
-    public class User : UserBase
+    public class RegisterModel
     {
-        public int Id { get; set; }
+        [Required]
         public string Username { get; set; }
-        public string PasswordHash { get; set; }
+        [Required]
+        public string Password { get; set; }
+        [Required]
         public string AddressMail { get; set; }
+        [Required]
         public string AccesLevel { get; set; }
+        [Required]
         public int AverageJobRate { get; set; }
+
     }
 }
