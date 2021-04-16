@@ -1,4 +1,6 @@
 using AutoMapper;
+using Linkdeed.Data;
+using Linkdeed.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,10 +33,10 @@ namespace backend_book_assignement
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            /*services.AddDbContext<Context>(opt =>
+            services.AddDbContext<Context>(opt =>
             {
                 opt.UseMySql(Configuration.GetConnectionString("DbConnect"));
-            });*/
+            });
             services.AddCors();
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -52,14 +54,14 @@ namespace backend_book_assignement
                 {
                     OnTokenValidated = context =>
                     {
-                        //var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
+                        var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
                         var userId = int.Parse(context.Principal.Identity.Name);
-                        /*var user = userService.GetById(userId);
+                        var user = userService.GetById(userId);
                         if (user == null)
                         {
                             // return unauthorized if user no longer exists
                             context.Fail("Unauthorized");
-                        }*/
+                        }
                         return Task.CompletedTask;
                     }
                 };
@@ -75,7 +77,7 @@ namespace backend_book_assignement
             });
 
             // configure DI for application services
-            //services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddSwaggerGen(swagger =>
             {
