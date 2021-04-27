@@ -18,14 +18,18 @@ namespace Linkdeed.Services
         User Create(User user, string password);
         void Update(User user, string currentPassword, string password, string confirmPassword);
         void Delete(int id);
+
+        string ForgotPassword(string username);
     }
     public class UserService : IUserService
     {
         private Context _context;
+        private readonly IEmailService _emailService;
 
-        public UserService(Context context)
+        public UserService(Context context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         public User Authenticate(string username, string password)
@@ -149,6 +153,37 @@ namespace Linkdeed.Services
             }
         }
 
+        public string ForgotPassword(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new AppException("Valid Username is requred");
+            }
+            else
+            {
+                var user = _context.User.SingleOrDefault(x => x.Username == username);
+                if (user != null)
+                {
+                    string password = GenerateRandomCryptographicKey(5);
+                    user.PasswordHash = computeHash(password);
+                    _context.SaveChanges();
+
+                    var emailAddress = new List<string>() { username };
+                    var emailSubject = "Password Recovery";
+                    var messageBody = password;
+
+                    var response = _emailService.SendEmailAsync(emailAddress, emailSubject, messageBody);
+                    System.Console.WriteLine(response.Result.StatusCode);
+
+                    if (response.IsCompletedSuccessfully)
+                    {
+                        return new string("If your account exists, your new password will be emailed to you shortly");
+                    }
+                }
+                return new string("If your account exists, your new password will be emailed to you shortly");
+            }
+        }
+
         private static string computeHash(string Password)
         {
             MD5 md5 = new MD5CryptoServiceProvider();
@@ -159,6 +194,27 @@ namespace Linkdeed.Services
                 hashstring += hashbyte.ToString("x2");
             }
             return hashstring;
+        }
+
+        
+
+        // helper method to generate random password
+        private static string GenerateRandomCryptographicKey(int keyLength)
+        {
+            char[] SPECIAL_CHARACTERS = @"!#$%&*@\".ToCharArray();
+            char[] UPPERCASE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+            Random rand = new Random();
+            int randomSpecialCharNumber = rand.Next(0, SPECIAL_CHARACTERS.Length - 1);
+            int randomUppercasChars = rand.Next(0, UPPERCASE_CHARACTERS.Length - 1);
+            RNGCryptoServiceProvider rngCryptoServiceProvider = new RNGCryptoServiceProvider();
+            byte[] randomBytes = new byte[keyLength];
+            rngCryptoServiceProvider.GetBytes(randomBytes);
+            string hashstring = "";
+            foreach (var hashbyte in randomBytes)
+            {
+                hashstring += hashbyte.ToString("x2");
+            }
+            return UPPERCASE_CHARACTERS[randomUppercasChars] + hashstring + SPECIAL_CHARACTERS[randomSpecialCharNumber];
         }
     }
 }
