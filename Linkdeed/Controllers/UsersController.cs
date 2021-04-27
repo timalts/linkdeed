@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Linkdeed.Data;
 using Linkdeed.DTO;
 using Linkdeed.Helper;
 using Linkdeed.Models;
@@ -25,12 +26,18 @@ namespace Linkdeed.Controllers
         private IUserService _userService;
         private IMapper _mapper;
         public IConfiguration Configuration;
+        private readonly Context _context;
+        private readonly IEmailService _emailService;
+
 
         public UsersController(
+            IEmailService emailService,
+            Context context,
             IUserService userService,
             IMapper mapper,
             IConfiguration configuration)
         {
+            _context = context;
             _userService = userService;
             _mapper = mapper;
             Configuration = configuration;
@@ -51,7 +58,8 @@ namespace Linkdeed.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.AccesLevel ?? "null")
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -69,6 +77,18 @@ namespace Linkdeed.Controllers
                 Token = tokenString
             });
         }
+
+        [Authorize(Roles = AccessLevel.Admin)]
+        [HttpPost("accesslevel/{id}")]
+        public IActionResult ChangeAccess(int id, UpdateAccessLevel model)
+        {
+            // You should check if the user exists or not and then check what is their current access level. As well as you need to create an enum or make sure that user does not pass any 
+            // value except the allowed values which are: NULL, Admin, Support, Student Lead
+            _context.User.Find(id).AccesLevel = model.AccessLevel;
+            _context.SaveChanges();
+            return Ok("User Access Level has been updated!");
+        }
+
 
         [AllowAnonymous]
         [HttpPost("register")]
@@ -140,6 +160,13 @@ namespace Linkdeed.Controllers
         {
             _userService.Delete(id);
             return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("forgotpassword")]
+        public IActionResult ForgotPassword(ForgotPassword model)
+        {
+            return Ok(_userService.ForgotPassword(model.Username));
         }
     }
 }
