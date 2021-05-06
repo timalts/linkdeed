@@ -13,6 +13,7 @@ namespace Linkdeed.Data
         public DbSet<User> User { get; set; }
         public DbSet<Job> Job { get; set; }
         public DbSet<JobOffer> JobOffer { get; set; }
+        public DbSet<Message> Message { get; set; }
 
     }
 }
