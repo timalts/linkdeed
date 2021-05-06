@@ -14,5 +14,8 @@ namespace Linkdeed.Data
         public DbSet<Job> Job { get; set; }
         public DbSet<JobOffer> JobOffer { get; set; }
 
+        public DbSet<EmployerDescription> EmployerDescription { get; set; }
+
+        public DbSet<UserDescription> UserDescription { get; set; }
     }
 }

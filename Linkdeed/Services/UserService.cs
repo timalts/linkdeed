@@ -1,6 +1,7 @@
 ﻿using Linkdeed.Data;
 using Linkdeed.Helper;
 using Linkdeed.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,10 @@ namespace Linkdeed.Services
         IEnumerable<User> GetAll();
         User GetById(int id);
         User Create(User user, string password);
+
+        void AddUserDesc(int id);
+
+        void AddEmpDesc(int id);
         void Update(User user, string currentPassword, string password, string confirmPassword);
         void Delete(int id);
 
@@ -81,10 +86,44 @@ namespace Linkdeed.Services
             //Saving hashed password into Database table
             user.PasswordHash = computeHash(password);
 
-            _context.User.Add(user);
-            _context.SaveChanges();
+             _context.User.Add(user);
+             _context.SaveChanges();
+
+          
+
+            if (user.AccesLevel == "Employer")
+            {
+                AddEmpDesc(user.Id);
+            }
+            else if (user.AccesLevel == "User")
+            {
+                AddUserDesc(user.Id);
+            }
 
             return user;
+        }
+
+        public void AddUserDesc(int id)
+        {
+            var desc = new UserDescription
+            {
+                Description = "",
+                UserId = id
+            };
+             _context.UserDescription.Add(desc);
+             _context.SaveChanges();
+        }
+
+        public void AddEmpDesc(int id)
+        {
+            var desc = new EmployerDescription
+            {
+                Description = "",
+                UserId = id,
+                IsPrenium = 0
+            };
+             _context.EmployerDescription.Add(desc);
+             _context.SaveChanges();
         }
 
         public void Update(User userParam, string currentPassword = null, string password = null, string confirmPassword = null)
@@ -157,7 +196,7 @@ namespace Linkdeed.Services
         {
             if (string.IsNullOrEmpty(username))
             {
-                throw new AppException("Valid Username is requred");
+                throw new AppException("Valid Username is required");
             }
             else
             {
@@ -168,16 +207,15 @@ namespace Linkdeed.Services
                     user.PasswordHash = computeHash(password);
                     _context.SaveChanges();
 
-                    var emailAddress = new List<string>() { username };
+                    var emailAddress = new List<string>() { user.AddressMail};
                     var emailSubject = "Password Recovery";
                     var messageBody = password;
 
                     var response = _emailService.SendEmailAsync(emailAddress, emailSubject, messageBody);
-                    System.Console.WriteLine(response.Result.StatusCode);
 
                     if (response.IsCompletedSuccessfully)
                     {
-                        return new string("If your account exists, your new password will be emailed to you shortly");
+                        return new string("If your account exists, your new password will be emailed to you shortly (success)");
                     }
                 }
                 return new string("If your account exists, your new password will be emailed to you shortly");
