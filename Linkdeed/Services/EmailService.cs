@@ -41,6 +41,7 @@ namespace Linkdeed.Services
                 Password = message
             });
 
+            //msg.AddSubstitution("{{Password}}", message);
             foreach (var email in emails)
             {
                 msg.AddTo(new EmailAddress(email));
@@ -55,7 +56,7 @@ namespace Linkdeed.Services
 
         private class SendgridForgotPassword
         {
-            [JsonProperty("password")]
+            [JsonProperty("Password")]
             public string Password { get; set; }
         }
     }

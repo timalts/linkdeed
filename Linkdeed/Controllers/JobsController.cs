@@ -36,7 +36,27 @@ namespace Linkdeed.Controllers
                        };
 
             return await jobs.ToListAsync();
-        }   
+        }
+
+        /*[HttpGet]
+        public async Task<ActionResult<IEnumerable<Job>>> GetJobsByPrenium()
+        {
+            var jobs = from job in _context.Job
+                       select new Job
+                       {
+                           Id = job.Id,
+                           User_Id = job.User_Id,
+                           JobName = job.JobName,
+                           JobPayment = job.JobPayment,
+                           JobDescription = job.JobDescription,
+                           JobStatus = job.JobStatus,
+                           EmployeeRate = job.EmployeeRate,
+                       };
+
+            List<Job> _jobs = await jobs.ToListAsync();
+
+            return await jobs.ToListAsync();
+        }*/
 
         // GET: JobsController/Details/5
         [HttpGet("{id}")]
