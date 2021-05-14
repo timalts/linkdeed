@@ -140,10 +140,12 @@ namespace backend_book_assignement
 
             app.UseAuthorization();
 
+           
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+           
         }
     }
 
