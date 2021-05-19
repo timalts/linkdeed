@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Linkdeed.DTO;
 
 namespace Linkdeed.Controllers
 {
@@ -38,11 +40,12 @@ namespace Linkdeed.Controllers
         // GET: JobOffersController/Details/5
         [HttpGet("{id}")]
         public async Task<ActionResult<JobOffer>> GetJobOffers_ById(int id)
-        {
+        { 
             return _context.JobOffer.ToList().Find(x => x.Id == id);
         }
 
-        // GET: JobOffersController/Create  
+        // GET: JobOffersController/Create 
+        [Authorize(Roles = AccessLevel.Employer + "," + AccessLevel.Admin)]
         [HttpPost]
         public async Task<ActionResult<JobOffer>> Add_JobOffers(JobOffer JobOffer)
         {
@@ -65,9 +68,18 @@ namespace Linkdeed.Controllers
         }
 
 
+        [Authorize(Roles = AccessLevel.Employer + "," + AccessLevel.Admin)]
         [HttpDelete("{id}")]
         public async Task<ActionResult<JobOffer>> Delete_JobOffer(int id)
         {
+            //Finding who is logged in
+            int logged_in_user = int.Parse(User.Identity.Name);
+            
+            //Rejecting access if the logged in user is not same as the user updating information
+            if (User.IsInRole("Employer") && logged_in_user != _context.Job.Find(_context.JobOffer.Find(id).JobId).User_Id)
+            {
+                return BadRequest(new { message = "Access Denied" });
+            }
             var JobOffers = _context.JobOffer.Find(id);
 
 
@@ -84,9 +96,18 @@ namespace Linkdeed.Controllers
             }
         }
 
+        [Authorize(Roles = AccessLevel.Employer + "," + AccessLevel.Admin)]
         [HttpPut("{id}")]
         public async Task<ActionResult> Update_Books(int id, JobOffer JobOffer)
         {
+            //Finding who is logged in
+            int logged_in_user = int.Parse(User.Identity.Name);
+            
+            //Rejecting access if the logged in user is not same as the user updating information
+            if (User.IsInRole("Employer") && logged_in_user != _context.Job.Find(_context.JobOffer.Find(id).JobId).User_Id)
+            {
+                return BadRequest(new { message = "Access Denied" });
+            }
             if (id != JobOffer.Id || !BookExists(id))
             {
                 return BadRequest();

@@ -11,7 +11,6 @@ using Linkdeed.Models;
 
 namespace Linkdeed.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class MessageController : ControllerBase
     {
@@ -21,7 +20,7 @@ namespace Linkdeed.Controllers
             _context = context;
         }
         // GET: api/<MessageController>
-        [HttpGet]
+        [HttpGet("getAll")]
         public async Task<ActionResult<IEnumerable<Message>>> GetMessage()
         {
             var messages = from message in _context.Message
@@ -35,28 +34,28 @@ namespace Linkdeed.Controllers
             return await messages.ToListAsync();
         }
 
-        // GET api/<MessageController>/5
-        [HttpGet("{id}")]
+        // GET api/<MessageController>/{Id}
+        [HttpGet("id")]
         public async Task<ActionResult<Message>> GetMessage_ById(int id)
         {
             return _context.Message.ToList().Find(x => x.Id == id);
         }
 
-        // GET api/<MessageController>/Sender/6
-        [HttpGet("{SenderId}")]
+        // GET api/<MessageController>/{SenderId}
+        [HttpGet("SenderId")]
         public async Task<ActionResult<Message>> GetMessage_BySenderId(int SenderId)
         {
             return _context.Message.ToList().Find(x => x.SenderId == SenderId);
         }
 
-        // GET api/<MessageController>/Receiver/7
-        [HttpGet("{ReceiverId}")]
+        // GET api/<MessageController>/{ReceiverId}
+        [HttpGet("ReceiverId")]
         public async Task<ActionResult<Message>> GetMessage_ByReceiverId(int ReceiverId)
         {
             return _context.Message.ToList().Find(x => x.ReceiverId == ReceiverId);
         }
 
-        [HttpPost]
+        [HttpPost("Add_Message")]
         public async Task<ActionResult<Message>> Add_Message (Message message)
         {
             if (!ModelState.IsValid)

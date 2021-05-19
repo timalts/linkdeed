@@ -95,7 +95,7 @@ namespace Linkdeed.Controllers
             {
                 var _desc = _context.EmployerDescription.SingleOrDefault(x => x.Id == id);
                 _desc.Description = desc.Description;
-                _desc.IsPrenium = desc.IsPrenium;
+                _desc.IsPremium = desc.IsPremium;
 
 
                 await _context.SaveChangesAsync();
@@ -115,7 +115,7 @@ namespace Linkdeed.Controllers
             {
                 var _desc = _context.EmployerDescription.SingleOrDefault(x => x.UserId == UserId);
                 _desc.Description = desc.Description;
-                _desc.IsPrenium = desc.IsPrenium;
+                _desc.IsPremium = desc.IsPremium;
 
 
                 await _context.SaveChangesAsync();
@@ -136,7 +136,7 @@ namespace Linkdeed.Controllers
                 return BadRequest(new { message = "There is no description linked to your account" });
             
             _desc.Description = desc.Description;
-            _desc.IsPrenium = desc.IsPrenium;
+            _desc.IsPremium = desc.IsPremium;
 
 
             await _context.SaveChangesAsync();

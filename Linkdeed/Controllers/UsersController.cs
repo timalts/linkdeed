@@ -99,6 +99,7 @@ namespace Linkdeed.Controllers
             }
         }
 
+        [Authorize(Roles = AccessLevel.Admin)]
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -110,6 +111,14 @@ namespace Linkdeed.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
+                        //Finding who is logged ian
+            int logged_in_user = int.Parse(User.Identity.Name);
+            
+            //Rejecting access if the logged in user is not same as the user updating information
+            if (logged_in_user != id && User.IsInRole("User") || User.IsInRole("Employer"))
+            {
+                return BadRequest(new { message = "Access Denied" });
+            }
             var user = _userService.GetById(id);
             var model = _mapper.Map<UserModel>(user);
             return Ok(model);
@@ -126,7 +135,7 @@ namespace Linkdeed.Controllers
             user.Id = id;
 
             //Rejecting access if the logged in user is not same as the user updating information
-            if (logged_in_user != id)
+            if (logged_in_user != id && (User.IsInRole("User") || User.IsInRole("Employer")))
             {
                 return BadRequest(new { message = "Access Denied" });
             }
@@ -144,6 +153,7 @@ namespace Linkdeed.Controllers
             }
         }
 
+        [Authorize(Roles = AccessLevel.Admin)]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

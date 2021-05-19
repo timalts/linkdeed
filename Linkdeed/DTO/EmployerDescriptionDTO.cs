@@ -9,6 +9,6 @@ namespace Linkdeed.DTO
     {
         public string Description { get; set; }
 
-        public int IsPrenium { get; set; }
+        public int IsPremium { get; set; }
     }
 }

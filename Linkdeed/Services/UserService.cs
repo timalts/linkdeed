@@ -147,7 +147,7 @@ namespace Linkdeed.Services
             {
                 Description = "",
                 UserId = id,
-                IsPrenium = 0
+                IsPremium = 0
             };
              _context.EmployerDescription.Add(desc);
              _context.SaveChanges();
