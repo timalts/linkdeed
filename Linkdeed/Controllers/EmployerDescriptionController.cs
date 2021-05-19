@@ -13,22 +13,22 @@ namespace Linkdeed.Controllers
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class UserDescriptionController : ControllerBase
+    public class EmployerDescriptionController : ControllerBase
     {
         private readonly Context _context;
-        public UserDescriptionController(Context context)
+        public EmployerDescriptionController(Context context)
         {
             _context = context;
         }
 
         // GET: DescriptionController
-        [HttpGet("CurentUserDescription")]
-        public async Task<ActionResult<UserDescription>> GetDescription()
+        [HttpGet("CurentEmployerDescription")]
+        public async Task<ActionResult<EmployerDescription>> GetDescription()
         {
             //Finding who is logged in
             int logged_id = int.Parse(User.Identity.Name);
 
-            var desc = _context.UserDescription.ToList().Find(x => x.UserId == logged_id);
+            var desc = _context.EmployerDescription.ToList().Find(x => x.UserId == logged_id);
 
             if (desc == null)
                 return BadRequest(new { message = "Your are not loged-in" });
@@ -39,9 +39,9 @@ namespace Linkdeed.Controllers
         // GET: JobsController
         [Authorize(Roles = AccessLevel.Admin)]
         [HttpGet("id")]
-        public async Task<ActionResult<UserDescription>> GetDescription_ById(int id)
+        public async Task<ActionResult<EmployerDescription>> GetDescription_ById(int id)
         {
-            var desc = _context.UserDescription.ToList().Find(x => x.Id == id);
+            var desc = _context.EmployerDescription.ToList().Find(x => x.Id == id);
 
             if (desc == null)
                 return BadRequest(new { message = "Description not found." });
@@ -52,9 +52,9 @@ namespace Linkdeed.Controllers
         // GET: JobsController
         [Authorize(Roles = AccessLevel.Admin)]
         [HttpGet("UserId")]
-        public async Task<ActionResult<UserDescription>> GetDescription_ByUserId(int UserId)
+        public async Task<ActionResult<EmployerDescription>> GetDescription_ByUserId(int UserId)
         {
-            var desc = _context.UserDescription.ToList().Find(x => x.UserId == UserId);
+            var desc = _context.EmployerDescription.ToList().Find(x => x.UserId == UserId);
 
             if (desc == null)
                 return BadRequest(new { message = "Description not found." });
@@ -64,9 +64,9 @@ namespace Linkdeed.Controllers
 
         [Authorize(Roles = AccessLevel.Admin)]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<UserDescription>> Delete_Description(int id)
+        public async Task<ActionResult<EmployerDescription>> Delete_Description(int id)
         {
-            var desc = _context.UserDescription.Find(id);
+            var desc = _context.EmployerDescription.Find(id);
 
 
             if (desc == null)
@@ -85,7 +85,7 @@ namespace Linkdeed.Controllers
 
         [Authorize(Roles = AccessLevel.Admin)]
         [HttpPut("id")]
-        public async Task<ActionResult> Update_Desc_ByID(int id, UserDescriptionDTO desc)
+        public async Task<ActionResult> Update_Desc_ByID(int id, EmployerDescriptionDTO desc)
         {
             if (!DescExists(id))
             {
@@ -93,8 +93,9 @@ namespace Linkdeed.Controllers
             }
             else
             {
-                var _desc = _context.UserDescription.SingleOrDefault(x => x.Id == id);
+                var _desc = _context.EmployerDescription.SingleOrDefault(x => x.Id == id);
                 _desc.Description = desc.Description;
+                _desc.IsPrenium = desc.IsPrenium;
 
 
                 await _context.SaveChangesAsync();
@@ -104,16 +105,17 @@ namespace Linkdeed.Controllers
 
         [Authorize(Roles = AccessLevel.Admin)]
         [HttpPut("UserId")]
-        public async Task<ActionResult> Update_Desc_ByUserID(int UserId, UserDescriptionDTO desc)
+        public async Task<ActionResult> Update_Desc_ByUserID(int UserId, EmployerDescriptionDTO desc)
         {
-            if (!_context.UserDescription.Any(x => x.UserId == UserId))
+            if (!_context.EmployerDescription.Any(x => x.UserId == UserId))
             {
                 return BadRequest(new { message = "Description not found." });
             }
             else
             {
-                var _desc = _context.UserDescription.SingleOrDefault(x => x.UserId == UserId);
+                var _desc = _context.EmployerDescription.SingleOrDefault(x => x.UserId == UserId);
                 _desc.Description = desc.Description;
+                _desc.IsPrenium = desc.IsPrenium;
 
 
                 await _context.SaveChangesAsync();
@@ -122,18 +124,19 @@ namespace Linkdeed.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> Update_Desc(UserDescriptionDTO desc)
+        public async Task<ActionResult> Update_Desc(EmployerDescriptionDTO desc)
         {
             //Finding who is logged in
             int logged_id = int.Parse(User.Identity.Name);
 
             
-            var _desc = _context.UserDescription.SingleOrDefault(x => x.UserId == logged_id);
+            var _desc = _context.EmployerDescription.SingleOrDefault(x => x.UserId == logged_id);
 
             if(_desc == null)
                 return BadRequest(new { message = "There is no description linked to your account" });
             
             _desc.Description = desc.Description;
+            _desc.IsPrenium = desc.IsPrenium;
 
 
             await _context.SaveChangesAsync();
@@ -143,7 +146,7 @@ namespace Linkdeed.Controllers
 
         private bool DescExists(int id)
         {
-            return _context.UserDescription.Any(x => x.Id == id);
+            return _context.EmployerDescription.Any(x => x.Id == id);
         }
     }
 }
