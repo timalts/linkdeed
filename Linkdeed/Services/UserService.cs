@@ -18,6 +18,8 @@ namespace Linkdeed.Services
         User GetById(int id);
         User Create(User user, string password);
 
+        User AdminCreate(User user, string password);
+
         void AddUserDesc(int id);
 
         void AddEmpDesc(int id);
@@ -83,6 +85,9 @@ namespace Linkdeed.Services
                 throw new AppException("Username \"" + user.Username + "\" is already taken");
             }
 
+            if(user.AccesLevel != "User" && user.AccesLevel != "Employer")
+                throw new AppException("Invalid AccesLevel, please try Employer or User");
+
             //Saving hashed password into Database table
             user.PasswordHash = computeHash(password);
 
@@ -99,6 +104,28 @@ namespace Linkdeed.Services
             {
                 AddUserDesc(user.Id);
             }
+
+            return user;
+        }
+
+        public User AdminCreate(User user, string password)
+        {
+            // validation
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new AppException("Password is required");
+            }
+
+            if (_context.User.Any(x => x.Username == user.Username))
+            {
+                throw new AppException("Username \"" + user.Username + "\" is already taken");
+            }
+
+            //Saving hashed password into Database table
+            user.PasswordHash = computeHash(password);
+
+            _context.User.Add(user);
+            _context.SaveChanges();
 
             return user;
         }
