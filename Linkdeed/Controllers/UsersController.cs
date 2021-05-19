@@ -78,17 +78,6 @@ namespace Linkdeed.Controllers
             });
         }
 
-        [Authorize(Roles = AccessLevel.Admin)]
-        [HttpPost("accesslevel/{id}")]
-        public IActionResult ChangeAccess(int id, UpdateAccessLevel model)
-        {
-            // You should check if the user exists or not and then check what is their current access level. As well as you need to create an enum or make sure that user does not pass any 
-            // value except the allowed values which are: NULL, Admin, Support, Student Lead
-            _context.User.Find(id).AccesLevel = model.AccessLevel;
-            _context.SaveChanges();
-            return Ok("User Access Level has been updated!");
-        }
-
 
         [AllowAnonymous]
         [HttpPost("register")]
