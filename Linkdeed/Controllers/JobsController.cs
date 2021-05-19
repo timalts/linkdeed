@@ -22,7 +22,7 @@ namespace Linkdeed.Controllers
             _context = context;
         }
         // GET: JobsController
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<Job>>> GetJobs()
         {
             var jobs = from job in _context.Job
@@ -40,28 +40,40 @@ namespace Linkdeed.Controllers
             return await jobs.ToListAsync();
         }
 
-        /*[HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobsByPremium()
+        [HttpGet("GetJobs_ByPrenium")]
+        public async Task<ActionResult<IEnumerable<Job>>> GetJobs_ByPrenium()
         {
-            var jobs = from job in _context.Job
-                       select new Job
-                       {
-                           Id = job.Id,
-                           User_Id = job.User_Id,
-                           JobName = job.JobName,
-                           JobPayment = job.JobPayment,
-                           JobDescription = job.JobDescription,
-                           JobStatus = job.JobStatus,
-                           EmployeeRate = job.EmployeeRate,
-                       };
+            List<Job> _jobs = await _context.Job.ToListAsync();
 
-            List<Job> _jobs = await jobs.ToListAsync();
+            List<Job> classic_job = new List<Job>();
+            List<Job> jobs = new List<Job>();
 
-            return await jobs.ToListAsync();
-        }*/
+            foreach (var job in _jobs)
+            {
+                var userDesc = _context.EmployerDescription.ToList().Find(x => x.UserId == job.User_Id);
+                if(userDesc != null)
+                {
+                    if (userDesc.IsPremium == 0)
+                    {
+                        classic_job.Add(job);
+                    }
+                    else
+                    {
+                        jobs.Add(job);
+                    }
+                }
+            }
+
+            foreach(var job in classic_job)
+            {
+                jobs.Add(job);
+            }
+
+            return jobs;
+        }
 
         // GET: JobsController/Details/5
-        [HttpGet("{id}")]
+        [HttpGet("id")]
         public async Task<ActionResult<Job>> GetJobs_ById(int id)
         {
             return _context.Job.ToList().Find(x => x.Id == id);
