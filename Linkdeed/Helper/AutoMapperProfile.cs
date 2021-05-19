@@ -14,6 +14,7 @@ namespace Linkdeed.Helper
         {
             CreateMap<User, UserModel>();
             CreateMap<RegisterModel, User>();
+            CreateMap<RegisterAdminModel, User>();
             CreateMap<UpdateModel, User>();
         }
     }
