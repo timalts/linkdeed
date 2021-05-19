@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Linkdeed.DTO;
 
 namespace Linkdeed.Controllers
 {
@@ -39,7 +41,7 @@ namespace Linkdeed.Controllers
         }
 
         /*[HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobsByPrenium()
+        public async Task<ActionResult<IEnumerable<Job>>> GetJobsByPremium()
         {
             var jobs = from job in _context.Job
                        select new Job
@@ -65,15 +67,16 @@ namespace Linkdeed.Controllers
             return _context.Job.ToList().Find(x => x.Id == id);
         }
 
-        // GET: JobsController/Create  
+        // GET: JobsController/Create
+        [Authorize(Roles = AccessLevel.Employer + "," + AccessLevel.Admin)]
         [HttpPost]
         public async Task<ActionResult<Job>> Add_Jobs(Job job)
+
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
             var jobs = new Job()
             {
                 Id = job.Id,
@@ -91,10 +94,19 @@ namespace Linkdeed.Controllers
             return CreatedAtAction("GetJobs_ById", new { id = jobs.Id }, job);
         }
 
-
+        [Authorize(Roles = AccessLevel.Employer + "," + AccessLevel.Admin)]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Job>> Delete_Job(int id)
-        {
+        { 
+            //Finding who is logged in
+            int logged_in_user = int.Parse(User.Identity.Name);
+            
+            //Rejecting access if the logged in user is not same as the user updating information
+            if (User.IsInRole("Employer") && logged_in_user != _context.Job.Find(id).User_Id)
+            {
+                return BadRequest(new { message = "Access Denied" });
+            }
+
             var jobs = _context.Job.Find(id);
 
 
@@ -111,9 +123,19 @@ namespace Linkdeed.Controllers
             }
         }
 
+        [Authorize(Roles = AccessLevel.Employer + "," + AccessLevel.Admin)]
         [HttpPut("{id}")]
         public async Task<ActionResult> Update_Books(int id, Job job)
-        {
+        { 
+            //Finding who is logged in
+            int logged_in_user = int.Parse(User.Identity.Name);
+            
+            //Rejecting access if the logged in user is not same as the user updating information
+            if (User.IsInRole("Employer") && logged_in_user != _context.Job.Find(id).User_Id)
+            {
+                return BadRequest(new { message = "Access Denied" });
+            }
+
             if (id != job.Id || !BookExists(id))
             {
                 return BadRequest();
