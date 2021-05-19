@@ -8,7 +8,7 @@ namespace Linkdeed.DTO
     public class AccessLevel
     {
         public const string Admin = "Admin";
-        public const string StudentLead = "Employer";
-        public const string Support = "User";
+        public const string Employer = "Employer";
+        public const string User = "User";
     }
 }
